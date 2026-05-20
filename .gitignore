@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+.python-version
+.venv/
+venv/
+downloads/
+emailgui/
+logs/
+session.json
+~$*
