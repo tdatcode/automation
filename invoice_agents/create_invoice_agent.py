@@ -117,41 +117,45 @@ class CreateInvoiceAgent:
     
     def _adjust_vat_amount(self, expected_total: float) -> None:
         """
-        So sánh tổng tiền dịch vụ trên web với tổng tiền Excel.
-        Nếu khác → Sửa ô "Tổng tiền thuế" để tổng khớp.
+        So sánh tổng tiền dịch vụ (mAmount) trên web với tổng tiền Excel.
+        Nếu khác → Sửa ô "Tổng tiền thuế" (mVATAmount).
         
-        Logic: Tổng tiền thuế mới = Tổng tiền Excel - Tổng tiền trước thuế
+        Logic:
+        1. Đọc mAmount (tổng tiền dịch vụ trên web)
+        2. So sánh với tổng tiền Excel
+        3. Nếu khác: Tổng tiền thuế mới = Tổng tiền Excel - mTotal (tổng tiền trước thuế)
+        4. Sửa mVATAmount
         """
         log(f"  → Kiểm tra tổng tiền...")
         
         try:
-            # Đọc "Tổng tiền trước thuế" (Total)
-            total_before_vat_input = self.page.locator("#Total, input[name='Total']").first
-            total_before_vat_text = total_before_vat_input.input_value()
-            total_before_vat = self._parse_money(total_before_vat_text)
-            log(f"    💰 Tổng tiền trước thuế (web): {total_before_vat:,.0f}")
-            
-            # Đọc "Tổng tiền thuế" (mVATAmount)
-            vat_amount_input = self.page.locator("#mVATAmount").first
-            vat_amount_text = vat_amount_input.input_value()
-            vat_amount_current = self._parse_money(vat_amount_text)
-            log(f"    💰 Tổng tiền thuế (web): {vat_amount_current:,.0f}")
-            
-            # Tổng tiền dịch vụ hiện tại trên web
-            current_total = total_before_vat + vat_amount_current
-            log(f"    💰 Tổng tiền dịch vụ (web): {current_total:,.0f}")
+            # Đọc "Tổng tiền dịch vụ" (mAmount) trên web
+            amount_input = self.page.locator("#mAmount").first
+            amount_text = amount_input.input_value()
+            web_total = self._parse_money(amount_text)
+            log(f"    💰 Tổng tiền dịch vụ (web): {web_total:,.0f}")
             log(f"    💰 Tổng tiền (Excel): {expected_total:,.0f}")
             
             # So sánh
-            if abs(current_total - expected_total) < 1:
+            if abs(web_total - expected_total) < 1:
                 log(f"    ✅ Tổng tiền khớp!")
                 return
             
-            # Tính tổng tiền thuế mới
-            new_vat_amount = expected_total - total_before_vat
-            log(f"    ⚠️  Sai lệch! Sửa tổng tiền thuế: {vat_amount_current:,.0f} → {new_vat_amount:,.0f}")
+            # Không bằng → Sửa tổng tiền thuế
+            log(f"    ⚠️  Sai lệch! Cần sửa...")
             
-            # Sửa ô "Tổng tiền thuế"
+            # Đọc "Tổng tiền trước thuế" (mTotal)
+            total_input = self.page.locator("#mTotal").first
+            total_text = total_input.input_value()
+            total_before_vat = self._parse_money(total_text)
+            log(f"    💰 Tổng tiền trước thuế (web): {total_before_vat:,.0f}")
+            
+            # Tính tổng tiền thuế mới = Tổng tiền Excel - Tổng tiền trước thuế
+            new_vat_amount = expected_total - total_before_vat
+            log(f"    💰 Tổng tiền thuế mới: {expected_total:,.0f} - {total_before_vat:,.0f} = {new_vat_amount:,.0f}")
+            
+            # Sửa ô "Tổng tiền thuế" (mVATAmount)
+            vat_amount_input = self.page.locator("#mVATAmount").first
             vat_amount_input.click()
             self.page.wait_for_timeout(500)
             vat_amount_input.fill("")
