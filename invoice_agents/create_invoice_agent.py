@@ -131,8 +131,8 @@ class CreateInvoiceAgent:
             total_before_vat = self._parse_money(total_before_vat_text)
             log(f"    💰 Tổng tiền trước thuế (web): {total_before_vat:,.0f}")
             
-            # Đọc "Tổng tiền thuế" (VATAmount)
-            vat_amount_input = self.page.locator("#VATAmount, input[name='VATAmount']").first
+            # Đọc "Tổng tiền thuế" (mVATAmount)
+            vat_amount_input = self.page.locator("#mVATAmount").first
             vat_amount_text = vat_amount_input.input_value()
             vat_amount_current = self._parse_money(vat_amount_text)
             log(f"    💰 Tổng tiền thuế (web): {vat_amount_current:,.0f}")
