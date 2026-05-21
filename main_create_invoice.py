@@ -33,6 +33,19 @@ def read_invoices_from_excel(excel_path: str) -> List[Dict[str, Any]]:
         df = pd.read_excel(excel_path, dtype={"Mã số thuế": str})
         log(f"  ✓ Đọc sheet mặc định: {len(df)} dòng")
     
+    # Đọc sheet Summary để lấy Tổng tiền theo ID hóa đơn
+    total_amount_map = {}
+    try:
+        df_summary = pd.read_excel(excel_path, sheet_name="Summary")
+        for _, row in df_summary.iterrows():
+            inv_id = row.get("ID hóa đơn")
+            total = row.get("Tổng tiền")
+            if not pd.isna(inv_id) and not pd.isna(total):
+                total_amount_map[str(int(inv_id))] = float(str(total).replace(",", "").replace(".", "").strip())
+        log(f"  ✓ Đọc sheet 'Summary': {len(total_amount_map)} tổng tiền")
+    except Exception as e:
+        log(f"  ⚠️  Không đọc được sheet Summary: {e}")
+    
     invoices = {}
     
     for idx, row in df.iterrows():
@@ -75,6 +88,7 @@ def read_invoices_from_excel(excel_path: str) -> List[Dict[str, Any]]:
                 "invoice_id": invoice_id,
                 "tax_code": tax_code,
                 "vat": vat,
+                "total_amount": total_amount_map.get(invoice_id),
                 "products": []
             }
         

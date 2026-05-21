@@ -34,6 +34,7 @@ class CreateInvoiceAgent:
                 "invoice_id": str,
                 "tax_code": str,
                 "vat": int (0, 5, 8, 10),
+                "total_amount": float (tổng tiền từ Excel Summary),
                 "products": [{"name": str, "quantity": int, "price": float}]
             }
         
@@ -43,8 +44,11 @@ class CreateInvoiceAgent:
         tax_code = invoice["tax_code"]
         vat = invoice["vat"]
         products = invoice["products"]
+        expected_total = invoice.get("total_amount")  # Tổng tiền từ Excel
         
         log(f"🎯 [{self.name}] Tạo hóa đơn: MST={tax_code}, VAT={vat}%, {len(products)} sản phẩm")
+        if expected_total:
+            log(f"  💰 Tổng tiền Excel: {expected_total:,.0f}")
         
         try:
             # Bước 1: Click nút "Tạo mới" (id="crtInvoice")
@@ -90,7 +94,11 @@ class CreateInvoiceAgent:
                 self._fill_product_row(idx, product)
                 self.page.wait_for_timeout(1500)
             
-            # Bước 7: Click "Lưu dữ liệu"
+            # Bước 7: Kiểm tra và sửa tổng tiền thuế (nếu cần)
+            if expected_total:
+                self._adjust_vat_amount(expected_total)
+            
+            # Bước 8: Click "Lưu dữ liệu"
             log(f"  → Click 'Lưu dữ liệu'...")
             self.page.wait_for_timeout(2000)
             submit_btn = self.page.locator("#submitBtn")
@@ -107,6 +115,68 @@ class CreateInvoiceAgent:
             traceback.print_exc()
             return {"success": False, "error": str(e)}
     
+    def _adjust_vat_amount(self, expected_total: float) -> None:
+        """
+        So sánh tổng tiền dịch vụ trên web với tổng tiền Excel.
+        Nếu khác → Sửa ô "Tổng tiền thuế" để tổng khớp.
+        
+        Logic: Tổng tiền thuế mới = Tổng tiền Excel - Tổng tiền trước thuế
+        """
+        log(f"  → Kiểm tra tổng tiền...")
+        
+        try:
+            # Đọc "Tổng tiền trước thuế" (Total)
+            total_before_vat_input = self.page.locator("#Total, input[name='Total']").first
+            total_before_vat_text = total_before_vat_input.input_value()
+            total_before_vat = self._parse_money(total_before_vat_text)
+            log(f"    💰 Tổng tiền trước thuế (web): {total_before_vat:,.0f}")
+            
+            # Đọc "Tổng tiền thuế" (VATAmount)
+            vat_amount_input = self.page.locator("#VATAmount, input[name='VATAmount']").first
+            vat_amount_text = vat_amount_input.input_value()
+            vat_amount_current = self._parse_money(vat_amount_text)
+            log(f"    💰 Tổng tiền thuế (web): {vat_amount_current:,.0f}")
+            
+            # Tổng tiền dịch vụ hiện tại trên web
+            current_total = total_before_vat + vat_amount_current
+            log(f"    💰 Tổng tiền dịch vụ (web): {current_total:,.0f}")
+            log(f"    💰 Tổng tiền (Excel): {expected_total:,.0f}")
+            
+            # So sánh
+            if abs(current_total - expected_total) < 1:
+                log(f"    ✅ Tổng tiền khớp!")
+                return
+            
+            # Tính tổng tiền thuế mới
+            new_vat_amount = expected_total - total_before_vat
+            log(f"    ⚠️  Sai lệch! Sửa tổng tiền thuế: {vat_amount_current:,.0f} → {new_vat_amount:,.0f}")
+            
+            # Sửa ô "Tổng tiền thuế"
+            vat_amount_input.click()
+            self.page.wait_for_timeout(500)
+            vat_amount_input.fill("")
+            self.page.wait_for_timeout(300)
+            vat_amount_input.fill(str(int(new_vat_amount)))
+            self.page.wait_for_timeout(1000)
+            
+            # Click ra ngoài để cập nhật
+            self.page.keyboard.press("Tab")
+            self.page.wait_for_timeout(1000)
+            
+            log(f"    ✅ Đã sửa tổng tiền thuế → Tổng dịch vụ = {expected_total:,.0f}")
+            
+        except Exception as e:
+            log(f"    ⚠️  Lỗi kiểm tra tổng tiền: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def _parse_money(self, text: str) -> float:
+        """Parse số tiền từ text (bỏ dấu chấm/phẩy phân cách)."""
+        import re
+        text = str(text).replace(".", "").replace(",", "")
+        text = re.sub(r'[^\d]', '', text)
+        return float(text) if text else 0
+
     def _fill_product_row(self, row_index: int, product: Dict[str, Any]) -> None:
         """Điền thông tin 1 sản phẩm vào hàng trong bảng."""
         name = product["name"]
