@@ -129,6 +129,9 @@ class CreateInvoiceAgent:
         log(f"  → Kiểm tra tổng tiền...")
         
         try:
+            # Chờ số tiền được load xong
+            self.page.wait_for_timeout(3000)
+            
             # Đọc "Tổng tiền dịch vụ" (mAmount) trên web
             amount_input = self.page.locator("#mAmount").first
             amount_text = amount_input.input_value()
