@@ -27,10 +27,10 @@ def read_invoices_from_excel(excel_path: str) -> List[Dict[str, Any]]:
     log(f"📋 Đọc file Excel: {excel_path}")
     
     try:
-        df = pd.read_excel(excel_path, sheet_name="Details")
+        df = pd.read_excel(excel_path, sheet_name="Details", dtype={"Mã số thuế": str})
         log(f"  ✓ Đọc sheet 'Details': {len(df)} dòng")
     except Exception:
-        df = pd.read_excel(excel_path)
+        df = pd.read_excel(excel_path, dtype={"Mã số thuế": str})
         log(f"  ✓ Đọc sheet mặc định: {len(df)} dòng")
     
     invoices = {}
@@ -47,12 +47,12 @@ def read_invoices_from_excel(excel_path: str) -> List[Dict[str, Any]]:
             continue
         
         invoice_id = str(int(invoice_id))
-        # MST: bỏ .0 thập phân nhưng giữ nguyên dấu gạch ngang (vd: 8829328799-001)
+        # MST: giữ nguyên dạng text, không chuyển sang số (giữ số 0 ở đầu)
         tax_code_raw = str(tax_code).strip()
-        try:
-            tax_code = str(int(float(tax_code_raw)))
-        except (ValueError, TypeError):
-            tax_code = tax_code_raw  # Giữ nguyên nếu có ký tự đặc biệt
+        if tax_code_raw.endswith(".0"):
+            tax_code = tax_code_raw[:-2]  # Bỏ .0 nhưng giữ nguyên chuỗi
+        else:
+            tax_code = tax_code_raw
         product_name = str(product_name).strip()
         
         try:
