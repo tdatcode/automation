@@ -94,6 +94,10 @@ class CreateInvoiceAgent:
                 self._fill_product_row(idx, product)
                 self.page.wait_for_timeout(1500)
             
+            # Click ra ngoài để số tiền được cập nhật
+            self.page.mouse.click(50, 50)
+            self.page.wait_for_timeout(2000)
+            
             # Bước 7: Kiểm tra và sửa tổng tiền thuế (nếu cần)
             if expected_total:
                 self._adjust_vat_amount(expected_total)
