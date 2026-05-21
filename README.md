@@ -19,8 +19,8 @@ botmail/
 │   ├── mail_agent.py            # Agent gửi email
 │   ├── master_agent_excel.py    # Agent điều phối (tải + gửi mail)
 │   └── utils.py                 # Hàm tiện ích
-├── excel/                       # File Excel đầu vào (gửi mail)
-├── exceltaohoadon/              # File Excel đầu vào (tạo hóa đơn)
+├── excel/
+│   └── HoaDon.xlsx             # File Excel chung (2 sheet)
 ├── downloads/                   # PDF đã tải (tự động tạo)
 ├── emailgui/                    # Danh sách mail output (tự động tạo)
 ├── chrome-debug.bat             # Mở Chrome với remote debugging
@@ -28,6 +28,15 @@ botmail/
 ├── .env.example                 # Mẫu cấu hình
 └── requirements.txt             # Dependencies
 ```
+
+## 📊 File Excel
+
+Cả 2 tác vụ dùng **cùng 1 file Excel** (`excel/HoaDon.xlsx`) với 2 sheet:
+
+| Sheet | Tác vụ | Mô tả |
+|-------|--------|--------|
+| **Summary** | Gửi mail | Thông tin khách hàng + email |
+| **Details** | Tạo hóa đơn | Chi tiết sản phẩm từng đơn |
 
 ## 🚀 Cài đặt
 

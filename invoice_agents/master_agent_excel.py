@@ -201,8 +201,8 @@ class MasterAgentExcel:
         log(f"📋 [{self.name}] Đọc file Excel: {excel_path}")
         
         try:
-            df = pd.read_excel(excel_path)
-            log(f"  ✓ Đọc được {len(df)} dòng")
+            df = pd.read_excel(excel_path, sheet_name="Summary")
+            log(f"  ✓ Đọc sheet 'Summary': {len(df)} dòng")
             log(f"  ✓ Các cột: {df.columns.tolist()}")
             
             # Kiểm tra các cột cần thiết

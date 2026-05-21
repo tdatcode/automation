@@ -12,7 +12,6 @@ Cách chạy:
 """
 
 import os
-import glob
 from typing import List, Dict, Any
 
 import pandas as pd
@@ -21,27 +20,6 @@ from playwright.sync_api import sync_playwright
 from invoice_agents import config
 from invoice_agents.create_invoice_agent import CreateInvoiceAgent
 from invoice_agents.utils import log
-
-
-EXCEL_CREATE_FOLDER = "exceltaohoadon"
-
-
-def find_excel_file(folder: str) -> str:
-    """Tìm file Excel trong thư mục."""
-    patterns = [
-        os.path.join(folder, "*.xlsx"),
-        os.path.join(folder, "*.xls"),
-    ]
-    files = []
-    for pattern in patterns:
-        files.extend(glob.glob(pattern))
-    files = [f for f in files if not os.path.basename(f).startswith("~$")]
-    
-    if not files:
-        raise FileNotFoundError(f"Không tìm thấy file Excel trong '{folder}'")
-    
-    files.sort(key=os.path.getmtime, reverse=True)
-    return files[0]
 
 
 def read_invoices_from_excel(excel_path: str) -> List[Dict[str, Any]]:
@@ -114,18 +92,12 @@ def main():
     log("🚀 BOT TẠO HÓA ĐƠN TỰ ĐỘNG - EasyInvoice")
     log("=" * 70)
     
-    # Tạo thư mục nếu chưa có
-    os.makedirs(EXCEL_CREATE_FOLDER, exist_ok=True)
+    config.ensure_dirs()
     
-    # Bước 1: Đọc file Excel
+    # Bước 1: Đọc file Excel (sheet "Details")
     log("\n📋 Bước 1: Đọc file Excel")
-    try:
-        excel_path = find_excel_file(EXCEL_CREATE_FOLDER)
-        log(f"  ✓ File: {excel_path}")
-    except FileNotFoundError as e:
-        log(f"❌ {e}")
-        log(f"💡 Đặt file Excel vào thư mục '{EXCEL_CREATE_FOLDER}/'")
-        return
+    excel_path = config.EXCEL_FILE
+    log(f"  ✓ File: {excel_path} (sheet 'Details')")
     
     invoices = read_invoices_from_excel(excel_path)
     
