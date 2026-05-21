@@ -87,56 +87,33 @@ class MasterAgentExcel:
         log(f"\n✅ [{self.name}] Sẽ xử lý {len(invoices)} đơn hàng")
         
         with sync_playwright() as p:
-            # Kết nối vào Chrome đã mở sẵn
-            # Bước 1: Mở Chrome với remote debugging
-            # Chạy lệnh này trước: chrome.exe --remote-debugging-port=9222
-            log(f"\n📍 [{self.name}] Đang kết nối vào Chrome...")
-            log("💡 TIP: Nếu chưa mở Chrome với remote debugging, chạy lệnh:")
-            log("   chrome.exe --remote-debugging-port=9222")
-            log("   hoặc nhấn ENTER để mở Chrome mới")
-            
-            use_existing = input("\n✋ Kết nối vào Chrome đã mở? (y/n, mặc định=n): ").strip().lower()
-            
-            if use_existing == 'y':
-                try:
-                    # Kết nối vào Chrome đã mở
-                    browser = p.chromium.connect_over_cdp("http://localhost:9222")
-                    log("✅ Đã kết nối vào Chrome đã mở")
-                    
-                    # Lấy context và page hiện tại
-                    contexts = browser.contexts
-                    if contexts:
-                        context = contexts[0]
-                        pages = context.pages
-                        if pages:
-                            page_easyinvoice = pages[0]
-                            log(f"✅ Sử dụng tab hiện tại: {page_easyinvoice.url}")
-                        else:
-                            page_easyinvoice = context.new_page()
-                    else:
-                        context = browser.new_context()
-                        page_easyinvoice = context.new_page()
-                except Exception as e:
-                    log(f"❌ Không kết nối được vào Chrome: {e}")
-                    log("→ Mở Chrome mới...")
-                    browser = p.chromium.launch(headless=False)
-                    context = browser.new_context(accept_downloads=True)
-                    page_easyinvoice = context.new_page()
-            else:
-                # Mở Chrome mới
-                browser = p.chromium.launch(headless=False)
-                context = browser.new_context(accept_downloads=True)
-                page_easyinvoice = context.new_page()
-            
+            # Mở Chrome của máy (giữ session đăng nhập)
+            log(f"\n📍 [{self.name}] Mở Chrome...")
+            browser = p.chromium.launch_persistent_context(
+                user_data_dir="",  # Dùng profile mặc định của Chrome
+                channel="chrome",  # Dùng Chrome đã cài trên máy
+                headless=False,
+                accept_downloads=True,
+            )
+            page_easyinvoice = browser.new_page()
+            log("✅ Đã mở Chrome")
             try:
                 # Khởi tạo agents
                 self.easyinvoice_agent = EasyInvoiceAgent(page_easyinvoice)
                 self.mail_agent = MailAgent()
                 
-                # Đăng nhập EasyInvoice
-                log(f"\n📍 [{self.name}] Mở EasyInvoice - vui lòng đăng nhập")
+                # Mở EasyInvoice
+                log(f"\n📍 [{self.name}] Mở EasyInvoice...")
                 page_easyinvoice.goto(config.EASYINVOICE_INDEX_URL)
-                input("✋ ENTER khi đã đăng nhập EasyInvoice")
+                page_easyinvoice.wait_for_timeout(3000)
+                
+                # Kiểm tra đăng nhập
+                if "login" in page_easyinvoice.url.lower():
+                    log("⚠️  Chưa đăng nhập! Vui lòng đăng nhập.")
+                    input("✋ ENTER khi đã đăng nhập EasyInvoice")
+                else:
+                    log("✅ Đã đăng nhập sẵn!")
+                    input("✋ ENTER để bắt đầu xử lý")
                 
                 # Xử lý từng đơn
                 for i, invoice in enumerate(invoices, 1):

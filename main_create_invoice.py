@@ -47,7 +47,12 @@ def read_invoices_from_excel(excel_path: str) -> List[Dict[str, Any]]:
             continue
         
         invoice_id = str(int(invoice_id))
-        tax_code = str(tax_code).strip()
+        # MST: bỏ .0 thập phân nhưng giữ nguyên dấu gạch ngang (vd: 8829328799-001)
+        tax_code_raw = str(tax_code).strip()
+        try:
+            tax_code = str(int(float(tax_code_raw)))
+        except (ValueError, TypeError):
+            tax_code = tax_code_raw  # Giữ nguyên nếu có ký tự đặc biệt
         product_name = str(product_name).strip()
         
         try:
@@ -118,44 +123,33 @@ def main():
         log("❌ Đã hủy")
         return
     
-    # Bước 2: Kết nối Chrome
-    log("\n🌐 Bước 2: Kết nối Chrome")
+    # Bước 2: Mở Chrome
+    log("\n🌐 Bước 2: Mở Chrome")
     
     with sync_playwright() as p:
-        use_existing = input("\n✋ Kết nối vào Chrome đã mở? (y/n, mặc định=n): ").strip().lower()
-        
-        if use_existing == 'y':
-            try:
-                browser = p.chromium.connect_over_cdp("http://localhost:9222")
-                log("  ✅ Đã kết nối vào Chrome")
-                contexts = browser.contexts
-                if contexts:
-                    context = contexts[0]
-                    page = context.new_page()
-                else:
-                    context = browser.new_context()
-                    page = context.new_page()
-            except Exception as e:
-                log(f"  ❌ Không kết nối được: {e}")
-                log("  → Mở Chrome mới...")
-                browser = p.chromium.launch(headless=False)
-                context = browser.new_context(accept_downloads=True)
-                page = context.new_page()
-        else:
-            browser = p.chromium.launch(headless=False)
-            context = browser.new_context(accept_downloads=True)
-            page = context.new_page()
+        # Mở Chrome của máy (giữ session đăng nhập)
+        log("  → Mở Chrome...")
+        browser = p.chromium.launch_persistent_context(
+            user_data_dir="",  # Dùng profile mặc định của Chrome
+            channel="chrome",  # Dùng Chrome đã cài trên máy
+            headless=False,
+            accept_downloads=True,
+        )
+        page = browser.new_page()
+        log("  ✅ Đã mở Chrome")
         
         # Bước 3: Mở trang EasyInvoice
         log("\n📝 Bước 3: Mở trang EasyInvoice")
         page.goto(config.EASYINVOICE_INDEX_URL)
         page.wait_for_timeout(3000)
         
+        # Kiểm tra đăng nhập
         if "login" in page.url.lower():
-            log("  ⚠️  Chưa đăng nhập!")
-            input("  ✋ Đăng nhập EasyInvoice rồi nhấn ENTER")
+            log("  ⚠️  Chưa đăng nhập! Vui lòng đăng nhập.")
+            input("  ✋ ENTER khi đã đăng nhập EasyInvoice")
+        else:
+            log("  ✅ Đã đăng nhập sẵn!")
         
-        log("  ✅ Đã sẵn sàng")
         input("  ✋ Nhấn ENTER để bắt đầu tạo hóa đơn")
         
         # Bước 4: Tạo từng hóa đơn
@@ -192,6 +186,7 @@ def main():
         log("=" * 70)
         log("\n💡 Chrome vẫn mở để bạn kiểm tra kết quả.")
         log("✅ HOÀN TẤT!")
+        browser.close()
 
 
 if __name__ == "__main__":
