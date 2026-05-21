@@ -87,16 +87,46 @@ class MasterAgentExcel:
         log(f"\n✅ [{self.name}] Sẽ xử lý {len(invoices)} đơn hàng")
         
         with sync_playwright() as p:
-            # Mở Chrome của máy (giữ session đăng nhập)
-            log(f"\n📍 [{self.name}] Mở Chrome...")
-            browser = p.chromium.launch_persistent_context(
-                user_data_dir="",  # Dùng profile mặc định của Chrome
-                channel="chrome",  # Dùng Chrome đã cài trên máy
-                headless=False,
-                accept_downloads=True,
-            )
-            page_easyinvoice = browser.new_page()
-            log("✅ Đã mở Chrome")
+            # Kết nối vào Chrome đang chạy (port 9222)
+            # Nếu chưa có, hướng dẫn người dùng mở Chrome
+            log(f"\n📍 [{self.name}] Kết nối Chrome...")
+            
+            browser = None
+            page_easyinvoice = None
+            
+            try:
+                browser = p.chromium.connect_over_cdp("http://localhost:9222")
+                log("✅ Đã kết nối vào Chrome")
+                contexts = browser.contexts
+                if contexts:
+                    context = contexts[0]
+                    page_easyinvoice = context.new_page()
+                else:
+                    context = browser.new_context(accept_downloads=True)
+                    page_easyinvoice = context.new_page()
+            except Exception:
+                log("❌ Không tìm thấy Chrome đang chạy với remote debugging.")
+                log("")
+                log("👉 Hãy đóng Chrome hiện tại, rồi mở lại bằng cách:")
+                log("   Double-click file 'chrome-debug.bat'")
+                log("   Hoặc chạy lệnh:")
+                log('   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --remote-debugging-port=9222')
+                log("")
+                input("✋ Nhấn ENTER sau khi đã mở Chrome")
+                
+                try:
+                    browser = p.chromium.connect_over_cdp("http://localhost:9222")
+                    log("✅ Đã kết nối vào Chrome")
+                    contexts = browser.contexts
+                    if contexts:
+                        context = contexts[0]
+                        page_easyinvoice = context.new_page()
+                    else:
+                        context = browser.new_context(accept_downloads=True)
+                        page_easyinvoice = context.new_page()
+                except Exception as e:
+                    log(f"❌ Vẫn không kết nối được: {e}")
+                    return stats
             try:
                 # Khởi tạo agents
                 self.easyinvoice_agent = EasyInvoiceAgent(page_easyinvoice)
@@ -154,7 +184,8 @@ class MasterAgentExcel:
                         page_easyinvoice.wait_for_timeout(wait_time * 1000)
                 
             finally:
-                browser.close()
+                # Không đóng Chrome - để người dùng tiếp tục sử dụng
+                pass
         
         # Xuất Excel nếu preview mode
         if not send_email:

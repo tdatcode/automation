@@ -124,19 +124,45 @@ def main():
         return
     
     # Bước 2: Mở Chrome
-    log("\n🌐 Bước 2: Mở Chrome")
+    log("\n🌐 Bước 2: Kết nối Chrome")
     
     with sync_playwright() as p:
-        # Mở Chrome của máy (giữ session đăng nhập)
-        log("  → Mở Chrome...")
-        browser = p.chromium.launch_persistent_context(
-            user_data_dir="",  # Dùng profile mặc định của Chrome
-            channel="chrome",  # Dùng Chrome đã cài trên máy
-            headless=False,
-            accept_downloads=True,
-        )
-        page = browser.new_page()
-        log("  ✅ Đã mở Chrome")
+        browser = None
+        page = None
+        
+        try:
+            browser = p.chromium.connect_over_cdp("http://localhost:9222")
+            log("  ✅ Đã kết nối vào Chrome")
+            contexts = browser.contexts
+            if contexts:
+                context = contexts[0]
+                page = context.new_page()
+            else:
+                context = browser.new_context(accept_downloads=True)
+                page = context.new_page()
+        except Exception:
+            log("  ❌ Không tìm thấy Chrome đang chạy với remote debugging.")
+            log("")
+            log("  👉 Hãy đóng Chrome hiện tại, rồi mở lại bằng cách:")
+            log("     Double-click file 'chrome-debug.bat'")
+            log("     Hoặc chạy lệnh:")
+            log('     "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" --remote-debugging-port=9222')
+            log("")
+            input("  ✋ Nhấn ENTER sau khi đã mở Chrome")
+            
+            try:
+                browser = p.chromium.connect_over_cdp("http://localhost:9222")
+                log("  ✅ Đã kết nối vào Chrome")
+                contexts = browser.contexts
+                if contexts:
+                    context = contexts[0]
+                    page = context.new_page()
+                else:
+                    context = browser.new_context(accept_downloads=True)
+                    page = context.new_page()
+            except Exception as e:
+                log(f"  ❌ Vẫn không kết nối được: {e}")
+                return
         
         # Bước 3: Mở trang EasyInvoice
         log("\n📝 Bước 3: Mở trang EasyInvoice")
@@ -186,7 +212,6 @@ def main():
         log("=" * 70)
         log("\n💡 Chrome vẫn mở để bạn kiểm tra kết quả.")
         log("✅ HOÀN TẤT!")
-        browser.close()
 
 
 if __name__ == "__main__":
