@@ -1,7 +1,7 @@
 # 🤖 EasyInvoice Automation Bot
 
 Bot tự động hóa các tác vụ trên hệ thống EasyInvoice:
-- **Tải hóa đơn PDF** và gửi email cho khách hàng
+- **Tải hóa đơn PDF** và gửi email cho khách hàng (tìm theo Mã số thuế)
 - **Tạo hóa đơn mới** từ file Excel
 
 ## 📁 Cấu trúc dự án
@@ -14,7 +14,7 @@ botmail/
 ├── main_create_invoice.py       # Tạo hóa đơn mới trên EasyInvoice
 ├── invoice_agents/
 │   ├── config.py                # Cấu hình chung
-│   ├── easyinvoice_agent.py     # Agent tải hóa đơn PDF
+│   ├── easyinvoice_agent.py     # Agent tải hóa đơn PDF (tìm theo MST)
 │   ├── create_invoice_agent.py  # Agent tạo hóa đơn mới
 │   ├── mail_agent.py            # Agent gửi email
 │   ├── master_agent_excel.py    # Agent điều phối (tải + gửi mail)
@@ -35,7 +35,7 @@ Cả 2 tác vụ dùng **cùng 1 file Excel** (`excel/HoaDon.xlsx`) với 2 shee
 
 | Sheet | Tác vụ | Mô tả |
 |-------|--------|--------|
-| **Summary** | Gửi mail | Thông tin khách hàng + email |
+| **Summary** | Gửi mail | Thông tin khách hàng + email + MST |
 | **Details** | Tạo hóa đơn | Chi tiết sản phẩm từng đơn |
 
 ## 🚀 Cài đặt
@@ -60,20 +60,31 @@ SENDER_PASSWORD=your_app_password
 
 ### Quy trình
 
-1. Đọc file Excel (`excel/HoaDon.xlsx`) chứa danh sách khách hàng
-2. Tìm kiếm từng khách hàng trên EasyInvoice (theo tên)
+1. Đọc file Excel (`excel/HoaDon.xlsx`, sheet "Summary") chứa danh sách khách hàng
+2. **Tìm kiếm từng khách hàng trên EasyInvoice theo Mã số thuế (MST)**
 3. So sánh tổng tiền để chọn đúng hóa đơn
 4. Nếu có nhiều kết quả → Chọn hóa đơn có "Hợp lệ" ở cột KQ CQT
-5. Tải file PDF hóa đơn
+5. Tải file PDF hóa đơn (đặt tên theo tên khách hàng)
 6. Gửi email (hoặc xuất danh sách)
 
-### File Excel cần có các cột
+### File Excel cần có các cột (sheet "Summary")
 
-| Cột | Mô tả |
-|-----|--------|
-| Tên công ty/nhà thuốc/quầy thuốc | Tên khách hàng |
-| Địa chỉ gửi hóa đơn | Email nhận |
-| Tổng tiền | Số tiền để so sánh |
+| Cột | Bắt buộc | Mô tả |
+|-----|----------|-------|
+| **Tên công ty/nhà thuốc/quầy thuốc** | ✅ | Tên khách hàng (dùng để đặt tên file PDF) |
+| **Mã số thuế** | ✅ | MST để tìm kiếm trên EasyInvoice |
+| **Địa chỉ gửi hóa đơn** | ✅ | Email nhận hóa đơn |
+| **Tổng tiền** | ⚪ | Số tiền để so sánh (optional) |
+
+### ⚠️ Lưu ý quan trọng về Mã số thuế
+
+**MST phải là TEXT trong Excel** để giữ số 0 ở đầu:
+
+1. Chọn cột "Mã số thuế"
+2. Chuột phải → Format Cells → Chọn "Text"
+3. Nhập MST (ví dụ: `0312670722`)
+
+Nếu để dạng Number, Excel sẽ tự động xóa số 0 ở đầu → Sai MST!
 
 ### Cách chạy
 
@@ -92,13 +103,14 @@ python main_excel_send.py
 
 ### Quy trình
 
-1. Đọc file Excel (`exceltaohoadon/TaoHoaDon.xlsx`, sheet "Details")
+1. Đọc file Excel (`excel/HoaDon.xlsx`, sheet "Details")
 2. Nhóm sản phẩm theo ID hóa đơn (cùng ID = cùng 1 hóa đơn)
 3. Với mỗi hóa đơn:
    - Click "Tạo mới"
    - Điền Mã số thuế → Lấy thông tin khách hàng
    - Chọn VAT %
    - Điền từng sản phẩm (tên, số lượng, đơn giá)
+   - So sánh tổng tiền với Excel, tự động điều chỉnh thuế nếu sai lệch
    - Lưu dữ liệu
 
 ### File Excel cần có các cột (sheet "Details")
@@ -120,21 +132,22 @@ python main_create_invoice.py
 
 ## 🌐 Kết nối Chrome
 
-Bot hỗ trợ 2 cách:
+Bot kết nối vào Chrome đang chạy với remote debugging:
 
-### Cách 1: Mở Chrome mới (mặc định)
-Script tự mở Chrome mới → Bạn đăng nhập → Nhấn ENTER.
+### Cách mở Chrome debug mode:
 
-### Cách 2: Kết nối Chrome đã mở
-Mở Chrome trước với remote debugging:
+**Cách 1: Double-click file `chrome-debug.bat`**
 
+**Cách 2: Chạy lệnh PowerShell:**
 ```powershell
-& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="C:\chrome-debug"
+& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222
 ```
 
-Hoặc double-click file `chrome-debug.bat`.
-
-Khi script hỏi "Kết nối vào Chrome đã mở?" → Nhập `y`.
+**Lưu ý:**
+- Đóng tất cả cửa sổ Chrome trước khi chạy
+- Chrome sẽ mở với remote debugging port 9222
+- Đăng nhập vào EasyInvoice trước khi chạy bot
+- Bot sẽ tự động kết nối vào Chrome đang mở
 
 ## ⚙️ Cấu hình (.env)
 
@@ -163,3 +176,31 @@ python test_agents.py
 - Python 3.10+
 - Google Chrome
 - Windows 10/11
+
+## 🔄 Changelog
+
+### v2.0 - Cập nhật tìm kiếm theo MST (2026-05-23)
+
+**Thay đổi chính:**
+- ✅ Tìm hóa đơn theo **Mã số thuế (MST)** thay vì tên khách hàng (chính xác hơn)
+- ✅ Sửa lỗi tên file PDF bị lặp (từ `Tên_Tên.pdf` → `Tên.pdf`)
+- ✅ Đảm bảo MST được đọc dạng text (giữ số 0 ở đầu)
+- ✅ Tự động điều chỉnh thuế khi tạo hóa đơn nếu tổng tiền sai lệch
+
+**File thay đổi:**
+- `invoice_agents/easyinvoice_agent.py` - Đổi tìm kiếm theo MST
+- `invoice_agents/utils.py` - Sửa tên file PDF
+- `invoice_agents/master_agent_excel.py` - Đọc MST dạng text
+
+## 📞 Hỗ trợ
+
+Nếu gặp lỗi, kiểm tra:
+1. Chrome đã mở với remote debugging port 9222 chưa?
+2. Đã đăng nhập EasyInvoice chưa?
+3. File Excel có đúng format không?
+4. Cột "Mã số thuế" có format Text không?
+5. File `.env` đã cấu hình đúng chưa?
+
+## 📄 License
+
+MIT License

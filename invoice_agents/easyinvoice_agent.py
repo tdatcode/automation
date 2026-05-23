@@ -2,7 +2,7 @@
 EasyInvoice Agent - AI Agent nhỏ để xử lý hóa đơn từ EasyInvoice.
 
 Nhiệm vụ:
-1. Tìm kiếm hóa đơn theo tên khách hàng
+1. Tìm kiếm hóa đơn theo Mã số thuế (MST)
 2. Đọc cột "Tên khách hàng" từ bảng
 3. Click icon mắt (Xem) để mở chi tiết hóa đơn
 4. Tải file PDF hóa đơn
@@ -26,25 +26,27 @@ class EasyInvoiceAgent:
         self.name = "EasyInvoiceAgent"
         log(f"🤖 [{self.name}] Khởi tạo agent")
     
-    def execute_task(self, order_id: str, customer_name: str, total_amount: Optional[float] = None) -> Dict[str, Any]:
+    def execute_task(self, order_id: str, customer_name: str, customer_tax_code: str, total_amount: Optional[float] = None) -> Dict[str, Any]:
         """
         Thực thi nhiệm vụ chính: tìm và tải hóa đơn.
         
         Args:
             order_id: ID đơn hàng
-            customer_name: Tên khách hàng
+            customer_name: Tên khách hàng (dùng để đặt tên file PDF)
+            customer_tax_code: Mã số thuế (MST) để tìm kiếm
             total_amount: Tổng tiền để so sánh (optional)
         
         Returns:
             Dict với keys: success, pdf_path, customer_name, error
         """
         log(f"🎯 [{self.name}] Bắt đầu xử lý Order {order_id}")
+        log(f"  🏢 MST: {customer_tax_code}")
         if total_amount:
             log(f"  💰 Tổng tiền cần tìm: {total_amount:,.0f} VNĐ")
         
         try:
-            # Bước 1: Tìm kiếm hóa đơn theo tên khách hàng
-            self.search_invoice_by_customer_name(customer_name)
+            # Bước 1: Tìm kiếm hóa đơn theo MST
+            self.search_invoice_by_tax_code(customer_tax_code)
             
             # Bước 2: Tìm hàng phù hợp (so sánh tổng tiền + KQ CQT)
             row_index = self.find_matching_invoice_row(customer_name, total_amount)
@@ -86,35 +88,35 @@ class EasyInvoiceAgent:
                 "error": str(e)
             }
     
-    def search_invoice_by_customer_name(self, customer_name: str) -> None:
+    def search_invoice_by_tax_code(self, tax_code: str) -> None:
         """
-        Tìm kiếm hóa đơn theo tên khách hàng.
-        Dán tên vào ô "Tên khách hàng" (id=nameCus) và click nút "Tìm kiếm".
+        Tìm kiếm hóa đơn theo Mã số thuế (MST).
+        Dán MST vào ô "Mã số thuế" (id=CodeTax) và click nút "Tìm kiếm".
         """
-        log(f"🔍 [{self.name}] Tìm kiếm: {customer_name}")
+        log(f"🔍 [{self.name}] Tìm kiếm theo MST: {tax_code}")
 
         try:
-            # Ô "Tên khách hàng": id=nameCus, name=nameCus, class=searchText form-control
-            customer_input = self.page.locator('#nameCus')
+            # Ô "Mã số thuế": id=CodeTax
+            tax_code_input = self.page.locator('#CodeTax')
             
-            if not customer_input.is_visible(timeout=5000):
-                log(f"❌ [{self.name}] Không tìm thấy ô 'Tên khách hàng' (#nameCus)")
+            if not tax_code_input.is_visible(timeout=5000):
+                log(f"❌ [{self.name}] Không tìm thấy ô 'Mã số thuế' (#CodeTax)")
                 return
 
-            log(f"  ✓ Tìm thấy ô 'Tên khách hàng' (#nameCus)")
+            log(f"  ✓ Tìm thấy ô 'Mã số thuế' (#CodeTax)")
             
             # Xóa nội dung cũ
             log(f"  → Xóa nội dung cũ...")
-            customer_input.click()
+            tax_code_input.click()
             self.page.wait_for_timeout(500)
-            customer_input.fill("", timeout=3000)
+            tax_code_input.fill("", timeout=3000)
             self.page.wait_for_timeout(500)
             
-            # Dán tên mới
-            log(f"  → Dán tên mới: {customer_name}")
-            customer_input.fill(customer_name, timeout=5000)
+            # Dán MST mới (chuyển sang string để giữ số 0 ở đầu)
+            log(f"  → Dán MST mới: {tax_code}")
+            tax_code_input.fill(str(tax_code), timeout=5000)
             self.page.wait_for_timeout(1000)
-            log(f"  ✓ Đã dán tên: {customer_name}")
+            log(f"  ✓ Đã dán MST: {tax_code}")
             
             # Click nút "Tìm kiếm"
             clicked = False
@@ -130,12 +132,17 @@ class EasyInvoiceAgent:
             
             if not clicked:
                 log(f"  ⚠️  Không tìm thấy nút, thử Enter")
-                customer_input.press("Enter")
+                tax_code_input.press("Enter")
             
             # Chờ kết quả tải
             log(f"  → Chờ kết quả tải...")
             self.page.wait_for_timeout(3000)
-            log(f"✅ [{self.name}] Đã tìm kiếm: {customer_name}")
+            log(f"✅ [{self.name}] Đã tìm kiếm MST: {tax_code}")
+                
+        except Exception as e:
+            log(f"⚠️  [{self.name}] Lỗi tìm kiếm: {e}")
+            import traceback
+            traceback.print_exc()
                 
         except Exception as e:
             log(f"⚠️  [{self.name}] Lỗi tìm kiếm: {e}")
@@ -512,8 +519,17 @@ def auto_view_and_download(
     page_ei: Page,
     order_id: str,
     customer_label: str,
+    tax_code: str = "",
 ) -> Optional[str]:
-    """Legacy function - sử dụng EasyInvoiceAgent thay thế."""
+    """
+    Legacy function - sử dụng EasyInvoiceAgent thay thế.
+    
+    DEPRECATED: Hàm này chỉ để tương thích với code cũ.
+    Nên sử dụng EasyInvoiceAgent.execute_task() trực tiếp.
+    """
     agent = EasyInvoiceAgent(page_ei)
-    result = agent.execute_task(order_id, customer_label)
+    # Nếu không có tax_code, dùng customer_label làm fallback
+    if not tax_code:
+        tax_code = customer_label
+    result = agent.execute_task(order_id, customer_label, tax_code)
     return result.get("pdf_path")

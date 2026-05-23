@@ -203,18 +203,24 @@ class MasterAgentExcel:
         
         Cột cần thiết:
         - "Tên công ty/nhà thuốc/quầy thuốc" → Tên khách hàng
+        - "Mã số thuế" → MST để tìm kiếm (dạng text, giữ số 0 ở đầu)
         - "Địa chỉ gửi hóa đơn" → Email nhận
         - "Tổng tiền" → Tổng tiền để so sánh (optional)
         """
         log(f"📋 [{self.name}] Đọc file Excel: {excel_path}")
         
         try:
-            df = pd.read_excel(excel_path, sheet_name="Summary")
+            # Đọc Excel với dtype để giữ MST dạng text
+            df = pd.read_excel(
+                excel_path, 
+                sheet_name="Summary",
+                dtype={"Mã số thuế": str}  # Đọc MST dạng text để giữ số 0 ở đầu
+            )
             log(f"  ✓ Đọc sheet 'Summary': {len(df)} dòng")
             log(f"  ✓ Các cột: {df.columns.tolist()}")
             
             # Kiểm tra các cột cần thiết
-            required_cols = ["Tên công ty/nhà thuốc/quầy thuốc", "Địa chỉ gửi hóa đơn"]
+            required_cols = ["Tên công ty/nhà thuốc/quầy thuốc", "Mã số thuế", "Địa chỉ gửi hóa đơn"]
             missing_cols = [col for col in required_cols if col not in df.columns]
             
             if missing_cols:
@@ -246,6 +252,18 @@ class MasterAgentExcel:
                     log(f"  ⚠️  Dòng {idx}: Không có tên khách hàng, bỏ qua")
                     continue
                 
+                # Lấy MST (giữ dạng text để không mất số 0 ở đầu)
+                tax_code = row.get("Mã số thuế")
+                if pd.isna(tax_code) or str(tax_code).strip() == "" or str(tax_code).strip().lower() == "nan":
+                    log(f"  ⚠️  Dòng {idx}: Không có MST, bỏ qua")
+                    continue
+                
+                # Chuyển MST thành chuỗi, loại bỏ phần .0 nếu có (nhưng giữ số 0 ở đầu)
+                tax_code_str = str(tax_code).strip()
+                # Nếu MST kết thúc bằng .0 (do Excel tự động format), loại bỏ phần .0
+                if tax_code_str.endswith('.0'):
+                    tax_code_str = tax_code_str[:-2]
+                
                 # Lấy tổng tiền (nếu có)
                 total_amount = None
                 if has_total_amount:
@@ -259,14 +277,15 @@ class MasterAgentExcel:
                 invoices.append({
                     "row_index": idx,
                     "pharmacy_name": str(pharmacy_name).strip(),
+                    "tax_code": tax_code_str,
                     "receiver_email": str(email).strip(),
                     "total_amount": total_amount
                 })
                 
                 if total_amount:
-                    log(f"  ✓ Dòng {idx}: {pharmacy_name} → {email} (Tổng: {total_amount:,.0f})")
+                    log(f"  ✓ Dòng {idx}: {pharmacy_name} (MST: {tax_code_str}) → {email} (Tổng: {total_amount:,.0f})")
                 else:
-                    log(f"  ✓ Dòng {idx}: {pharmacy_name} → {email}")
+                    log(f"  ✓ Dòng {idx}: {pharmacy_name} (MST: {tax_code_str}) → {email}")
             
             log(f"✅ [{self.name}] Tổng cộng {len(invoices)} đơn hợp lệ")
             return invoices
@@ -287,6 +306,7 @@ class MasterAgentExcel:
         Xử lý 1 đơn hàng: tìm trên EasyInvoice, tải PDF, gửi email (hoặc preview).
         """
         pharmacy_name = invoice["pharmacy_name"]
+        tax_code = invoice["tax_code"]
         receiver_email = invoice["receiver_email"]
         total_amount = invoice.get("total_amount")
         
@@ -302,6 +322,7 @@ class MasterAgentExcel:
         try:
             # Bước 1: Tìm và tải PDF từ EasyInvoice
             log(f"🔍 [{self.name}] Tìm hóa đơn cho: {pharmacy_name}")
+            log(f"  🏢 MST: {tax_code}")
             if total_amount:
                 log(f"  💰 Tổng tiền: {total_amount:,.0f} VNĐ")
             
@@ -309,6 +330,7 @@ class MasterAgentExcel:
             ei_result = self.easyinvoice_agent.execute_task(
                 order_id=pharmacy_name,  # Dùng tên làm order_id
                 customer_name=pharmacy_name,
+                customer_tax_code=tax_code,  # Truyền MST để tìm kiếm
                 total_amount=total_amount
             )
             

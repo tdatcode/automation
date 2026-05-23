@@ -62,6 +62,11 @@ def sanitize_filename_component(name: str, max_length: int = 100) -> str:
 
 
 def pdf_filename_for_customer(order_id: str, customer_display_name: str) -> str:
+    """
+    Tạo tên file PDF từ tên khách hàng.
+    Format: {customer_name}.pdf
+    
+    Lưu ý: Chỉ dùng tên khách hàng, không lặp lại
+    """
     slug = sanitize_filename_component(customer_display_name)
-    oid = sanitize_filename_component(str(order_id), max_length=32)
-    return f"{oid}_{slug}.pdf"
+    return f"{slug}.pdf"
