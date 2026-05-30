@@ -1,0 +1,208 @@
+═══════════════════════════════════════════════════════════════
+  HƯỚNG DẪN: KIỂM TRA EMAIL TRƯỚC KHI GỬI THẬT
+═══════════════════════════════════════════════════════════════
+
+📧 TAB 3: GỬI EMAIL - GIỜ CÓ 2 CHẾ ĐỘ
+
+┌─────────────────────────────────────────────────────────────┐
+│ 🧪 TEST MODE - Gửi cho chính mình để kiểm tra              │
+│ 📧 REAL MODE - Gửi thật cho khách hàng                      │
+└─────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════
+  BƯỚC 1: TEST TRƯỚC (QUAN TRỌNG!)
+═══════════════════════════════════════════════════════════════
+
+1. Mở Tab "📧 Gửi email"
+
+2. Chọn file Excel
+
+3. Điền Email + Mật khẩu
+
+4. Click nút: 🧪 TEST - Gửi cho chính mình
+
+5. Xác nhận popup
+
+6. Chờ xử lý (Chrome tự động mở)
+
+7. Kiểm tra hộp thư của BẠN (không phải khách hàng)
+
+8. Mở email và kiểm tra:
+   ✅ Thông tin khách hàng đúng?
+   ✅ PDF đúng hóa đơn?
+   ✅ Nội dung email OK?
+
+
+═══════════════════════════════════════════════════════════════
+  EMAIL TEST SẼ NHƯ THẾ NÀO?
+═══════════════════════════════════════════════════════════════
+
+Tiêu đề: 🧪 TEST - Hóa đơn điện tử - Nhà thuốc ABC
+
+Nội dung:
+┌─────────────────────────────────────────────────────────────┐
+│ 🧪 ĐÂY LÀ EMAIL TEST - KHÔNG GỬI CHO KHÁCH HÀNG            │
+│                                                             │
+│ Email này được gửi để kiểm tra trước khi gửi thật.         │
+│                                                             │
+│ ---                                                         │
+│ THÔNG TIN KHÁCH HÀNG:                                       │
+│ - Tên: Nhà thuốc ABC                                       │
+│ - MST: 0312670722                                           │
+│ - Email thật: nhathuocabc@gmail.com                        │
+│                                                             │
+│ ---                                                         │
+│ NỘI DUNG EMAIL THẬT SẼ NHƯ SAU:                            │
+│                                                             │
+│ Kính gửi Quý khách Nhà thuốc ABC,                          │
+│                                                             │
+│ Công ty xin gửi hóa đơn điện tử đính kèm.                  │
+│                                                             │
+│ Quý khách vui lòng kiểm tra file PDF trong email này.      │
+│                                                             │
+│ Trân trọng.                                                 │
+│                                                             │
+│ ---                                                         │
+│ Công ty Lucky Star                                          │
+└─────────────────────────────────────────────────────────────┘
+
+Đính kèm: Nhà_thuốc_ABC.pdf
+
+
+═══════════════════════════════════════════════════════════════
+  BƯỚC 2: GỬI THẬT (SAU KHI TEST OK)
+═══════════════════════════════════════════════════════════════
+
+1. Nếu email TEST OK → Click nút: 📧 THẬT - Gửi cho khách hàng
+
+2. Đọc popup cảnh báo kỹ:
+   ⚠️  Email sẽ gửi đến KHÁCH HÀNG
+   ⚠️  Địa chỉ: Trong cột 'Địa chỉ gửi hóa đơn'
+   ⚠️  Không thể hoàn tác!
+
+3. Xác nhận nếu chắc chắn
+
+4. Chờ xử lý
+
+5. Hoàn thành!
+
+
+═══════════════════════════════════════════════════════════════
+  EMAIL THẬT SẼ NHƯ THẾ NÀO?
+═══════════════════════════════════════════════════════════════
+
+Tiêu đề: Hóa đơn điện tử - Nhà thuốc ABC
+
+Nội dung:
+┌─────────────────────────────────────────────────────────────┐
+│ Kính gửi Quý khách Nhà thuốc ABC,                          │
+│                                                             │
+│ Công ty xin gửi hóa đơn điện tử đính kèm.                  │
+│                                                             │
+│ Quý khách vui lòng kiểm tra file PDF trong email này.      │
+│                                                             │
+│ Trân trọng.                                                 │
+│                                                             │
+│ ---                                                         │
+│ Công ty Lucky Star                                          │
+└─────────────────────────────────────────────────────────────┘
+
+Đính kèm: Nhà_thuốc_ABC.pdf
+
+
+═══════════════════════════════════════════════════════════════
+  LỢI ÍCH CỦA TEST MODE
+═══════════════════════════════════════════════════════════════
+
+✅ AN TOÀN HƠN
+   - Kiểm tra trước khi gửi thật
+   - Tránh gửi nhầm email
+   - Tránh gửi sai PDF
+
+✅ TỰ TIN HƠN
+   - Xem trước email sẽ gửi
+   - Đảm bảo nội dung đúng
+   - Đảm bảo PDF đúng
+
+✅ CHUYÊN NGHIỆP HƠN
+   - Không gửi nhầm cho khách hàng
+   - Không phải xin lỗi vì gửi sai
+   - Tạo ấn tượng tốt
+
+
+═══════════════════════════════════════════════════════════════
+  CÂU HỎI THƯỜNG GẶP
+═══════════════════════════════════════════════════════════════
+
+❓ TEST mode có gửi cho khách hàng không?
+   → KHÔNG! Chỉ gửi cho email của BẠN
+
+❓ TEST mode có tính phí không?
+   → KHÔNG! Miễn phí như gửi email bình thường
+
+❓ Có thể TEST nhiều lần không?
+   → CÓ! Test bao nhiêu lần cũng được
+
+❓ TEST xong có cần làm gì không?
+   → Kiểm tra email → Nếu OK → Click THẬT
+
+❓ Nếu TEST thấy sai thì sao?
+   → Sửa file Excel → TEST lại → Đến khi OK mới THẬT
+
+❓ Có thể dừng giữa chừng không?
+   → CÓ! Click nút "Dừng lại"
+
+
+═══════════════════════════════════════════════════════════════
+  LƯU Ý QUAN TRỌNG
+═══════════════════════════════════════════════════════════════
+
+⚠️  LUÔN TEST TRƯỚC KHI GỬI THẬT!
+
+⚠️  Kiểm tra kỹ email TEST:
+   - Thông tin khách hàng
+   - PDF hóa đơn
+   - Nội dung email
+
+⚠️  Chỉ click THẬT khi đã chắc chắn 100%
+
+⚠️  Email THẬT không thể hoàn tác!
+
+
+═══════════════════════════════════════════════════════════════
+  QUY TRÌNH KHUYẾN NGHỊ
+═══════════════════════════════════════════════════════════════
+
+1. Chuẩn bị file Excel
+
+2. TEST với 1-2 dòng đầu tiên
+
+3. Kiểm tra email TEST kỹ
+
+4. Nếu OK → TEST toàn bộ file
+
+5. Kiểm tra lại
+
+6. Nếu OK → GỬI THẬT toàn bộ
+
+7. Hoàn thành!
+
+
+═══════════════════════════════════════════════════════════════
+  HỖ TRỢ
+═══════════════════════════════════════════════════════════════
+
+Đọc thêm:
+- UPDATE_EMAIL_TEST.md (Chi tiết kỹ thuật)
+- README.md (Hướng dẫn đầy đủ)
+
+Liên hệ:
+- [Email hỗ trợ của bạn]
+
+
+═══════════════════════════════════════════════════════════════
+
+Chúc bạn thành công! 🎉
+
+═══════════════════════════════════════════════════════════════

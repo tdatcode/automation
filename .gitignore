@@ -10,3 +10,10 @@ logs/
 session.json
 ~$*
 thuyettrinh.md
+
+# Build files
+build/
+dist/
+*.exe
+*.zip
+EasyInvoiceAuto_v1.0/

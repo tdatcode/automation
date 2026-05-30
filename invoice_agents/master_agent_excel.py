@@ -43,7 +43,9 @@ class MasterAgentExcel:
         self,
         excel_file: Optional[str] = None,
         send_email: bool = True,
-        output_file: Optional[str] = None
+        output_file: Optional[str] = None,
+        skip_confirmation: bool = False,  # Thêm tham số này cho GUI
+        test_mode: bool = False  # Thêm tham số test_mode
     ) -> Dict[str, Any]:
         """
         Thực thi toàn bộ quy trình từ Excel.
@@ -52,11 +54,19 @@ class MasterAgentExcel:
             excel_file: Đường dẫn file Excel (None = dùng mặc định)
             send_email: True = gửi email, False = chỉ xuất Excel
             output_file: File Excel output nếu send_email=False
+            skip_confirmation: True = bỏ qua input() cho GUI
+            test_mode: True = gửi cho chính mình (test), False = gửi cho khách hàng
             
         Returns:
             Dict với thống kê kết quả
         """
-        mode_text = "GỬI EMAIL" if send_email else "PREVIEW (KHÔNG GỬI EMAIL)"
+        if test_mode:
+            mode_text = "🧪 TEST MODE - GỬI CHO CHÍNH MÌNH"
+        elif send_email:
+            mode_text = "📧 GỬI EMAIL THẬT"
+        else:
+            mode_text = "PREVIEW (KHÔNG GỬI EMAIL)"
+        
         log(f"🚀 [{self.name}] BẮT ĐẦU QUY TRÌNH - {mode_text}")
         log("=" * 70)
         
@@ -140,10 +150,19 @@ class MasterAgentExcel:
                 # Kiểm tra đăng nhập
                 if "login" in page_easyinvoice.url.lower():
                     log("⚠️  Chưa đăng nhập! Vui lòng đăng nhập.")
-                    input("✋ ENTER khi đã đăng nhập EasyInvoice")
+                    if not skip_confirmation:
+                        input("✋ ENTER khi đã đăng nhập EasyInvoice")
+                    else:
+                        # GUI mode: Sẽ hiển thị popup yêu cầu xác nhận
+                        log("⏳ Vui lòng đăng nhập EasyInvoice trong Chrome...")
+                        log("💡 Sau khi đăng nhập xong, click OK trong popup")
                 else:
                     log("✅ Đã đăng nhập sẵn!")
-                    input("✋ ENTER để bắt đầu xử lý")
+                    if not skip_confirmation:
+                        input("✋ ENTER để bắt đầu xử lý")
+                    else:
+                        # GUI mode: Sẽ hiển thị popup xác nhận
+                        log("💡 Click OK để bắt đầu xử lý...")
                 
                 # Xử lý từng đơn
                 for i, invoice in enumerate(invoices, 1):
@@ -154,7 +173,8 @@ class MasterAgentExcel:
                     result = self._process_single_invoice(
                         invoice,
                         page_easyinvoice,
-                        send_email
+                        send_email,
+                        test_mode  # Truyền test_mode
                     )
                     
                     stats["results"].append(result)
@@ -300,10 +320,14 @@ class MasterAgentExcel:
         self,
         invoice: Dict[str, Any],
         page_easyinvoice: Page,
-        send_email: bool
+        send_email: bool,
+        test_mode: bool = False  # Thêm tham số test_mode
     ) -> Dict[str, Any]:
         """
         Xử lý 1 đơn hàng: tìm trên EasyInvoice, tải PDF, gửi email (hoặc preview).
+        
+        Args:
+            test_mode: True = gửi cho chính mình, False = gửi cho khách hàng
         """
         pharmacy_name = invoice["pharmacy_name"]
         tax_code = invoice["tax_code"]
@@ -345,19 +369,34 @@ class MasterAgentExcel:
             
             # Bước 2: Gửi email hoặc preview
             if send_email:
-                log(f"📧 [{self.name}] Gửi email đến: {receiver_email}")
+                # Xác định email nhận
+                if test_mode:
+                    # TEST MODE: Gửi cho chính mình
+                    actual_receiver = config.SENDER_EMAIL
+                    log(f"🧪 [{self.name}] TEST MODE - Gửi cho chính mình: {actual_receiver}")
+                    log(f"   (Email thật của khách hàng: {receiver_email})")
+                else:
+                    # REAL MODE: Gửi cho khách hàng
+                    actual_receiver = receiver_email
+                    log(f"📧 [{self.name}] Gửi email đến: {actual_receiver}")
                 
                 # Tạo email message
                 from email.message import EmailMessage
                 import smtplib
                 
                 msg = EmailMessage()
-                msg["Subject"] = f"Hóa đơn điện tử - {pharmacy_name}"
-                msg["From"] = config.SENDER_EMAIL
-                msg["To"] = receiver_email
                 
-                msg.set_content(
-                    f"""
+                # Tiêu đề email
+                if test_mode:
+                    msg["Subject"] = f"🧪 TEST - Hóa đơn điện tử - {pharmacy_name}"
+                else:
+                    msg["Subject"] = f"Hóa đơn điện tử - {pharmacy_name}"
+                
+                msg["From"] = config.SENDER_EMAIL
+                msg["To"] = actual_receiver
+                
+                # Nội dung email
+                email_body = f"""
 Kính gửi Quý khách {pharmacy_name},
 
 Công ty xin gửi hóa đơn điện tử đính kèm.
@@ -369,7 +408,27 @@ Trân trọng.
 ---
 Công ty Lucky Star
 """
-                )
+                
+                # Thêm thông tin test nếu là test mode
+                if test_mode:
+                    email_body = f"""
+🧪 ĐÂY LÀ EMAIL TEST - KHÔNG GỬI CHO KHÁCH HÀNG
+
+Email này được gửi để kiểm tra trước khi gửi thật.
+
+---
+THÔNG TIN KHÁCH HÀNG:
+- Tên: {pharmacy_name}
+- MST: {tax_code}
+- Email thật: {receiver_email}
+
+---
+NỘI DUNG EMAIL THẬT SẼ NHƯ SAU:
+
+{email_body}
+"""
+                
+                msg.set_content(email_body)
                 
                 # Đính kèm PDF
                 with open(ei_result["pdf_path"], "rb") as f:
@@ -390,7 +449,11 @@ Công ty Lucky Star
                     
                     result["status"] = "SUCCESS"
                     result["email_sent"] = True
-                    log(f"✅ [{self.name}] Đã gửi email thành công")
+                    
+                    if test_mode:
+                        log(f"✅ [{self.name}] Đã gửi email TEST thành công đến: {actual_receiver}")
+                    else:
+                        log(f"✅ [{self.name}] Đã gửi email thành công đến: {actual_receiver}")
                     
                 except Exception as e:
                     result["status"] = "MAIL_ERROR"

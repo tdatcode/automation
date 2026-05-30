@@ -1,0 +1,161 @@
+========================================
+  EMAIL MẪU GỬI CHO NGƯỜI DÙNG
+========================================
+
+Tiêu đề: [Phần mềm] EasyInvoice Auto - Tự động hóa hóa đơn
+
+---
+
+Xin chào [Tên người dùng],
+
+Gửi bạn phần mềm **EasyInvoice Auto** để tự động hóa xử lý hóa đơn.
+
+📦 **FILE ĐÍNH KÈM:**
+- EasyInvoiceAuto_v1.0.zip (~200MB)
+
+🎯 **CHỨC NĂNG:**
+1. ✅ Tải PDF hóa đơn + Đổi tên tự động
+2. ✅ Tạo hóa đơn mới trên EasyInvoice
+3. ✅ Gửi email hóa đơn cho khách hàng
+
+📋 **CÁCH CÀI ĐẶT:**
+1. Giải nén file ZIP
+2. Vào thư mục EasyInvoiceAuto_v1.0
+3. Double-click file **EasyInvoiceAuto.exe**
+4. Làm theo hướng dẫn trong file **README.txt**
+
+⏱️ **LẦN ĐẦU SỬ DỤNG:**
+- Cần internet để tải Chromium (~100MB)
+- Mất 5-10 phút cài đặt
+- Lần sau không cần nữa, mở ngay!
+
+💻 **YÊU CẦU HỆ THỐNG:**
+- Windows 10 hoặc 11
+- Google Chrome (tự động cài nếu chưa có)
+- Kết nối internet (chỉ lần đầu)
+
+📚 **TÀI LIỆU HƯỚNG DẪN:**
+- **README.txt** - Hướng dẫn chi tiết đầy đủ
+- **HUONG_DAN_NHANH.txt** - Hướng dẫn nhanh, FAQ
+
+🔒 **BẢO MẬT:**
+- Phần mềm chạy hoàn toàn trên máy bạn
+- Không gửi dữ liệu ra ngoài
+- Đăng nhập EasyInvoice được lưu an toàn
+
+❓ **CÂU HỎI THƯỜNG GẶP:**
+
+**Q: Có cần cài Python không?**
+A: KHÔNG! Chỉ cần double-click file EXE.
+
+**Q: Có cần chạy server không?**
+A: KHÔNG! Mọi thứ tự động.
+
+**Q: Có cần nhấn Enter trong terminal không?**
+A: KHÔNG! Chỉ cần click nút trong app.
+
+**Q: Lần sau có phải cài lại không?**
+A: KHÔNG! Lần sau mở ngay, không cần cài gì.
+
+**Q: File Excel cần format gì?**
+A: Xem chi tiết trong README.txt
+
+📧 **HỖ TRỢ:**
+Nếu gặp vấn đề, vui lòng:
+1. Đọc file README.txt
+2. Đọc file HUONG_DAN_NHANH.txt
+3. Liên hệ: [Email của bạn]
+4. Gửi kèm screenshot lỗi
+
+🎉 **CHÚC BẠN SỬ DỤNG THÀNH CÔNG!**
+
+Trân trọng,
+[Tên của bạn]
+
+---
+
+P/S: File ZIP khá lớn (~200MB). Nếu không tải được qua email, tôi sẽ gửi link Google Drive.
+
+========================================
+
+---
+
+========================================
+  EMAIL MẪU (NGẮN GỌN)
+========================================
+
+Tiêu đề: EasyInvoice Auto - Phần mềm tự động hóa
+
+---
+
+Xin chào,
+
+Gửi bạn phần mềm EasyInvoice Auto (file đính kèm).
+
+**Cách dùng:**
+1. Giải nén ZIP
+2. Double-click EasyInvoiceAuto.exe
+3. Làm theo hướng dẫn
+
+**Lần đầu:** Mất 5-10 phút cài đặt (chỉ 1 lần)
+**Lần sau:** Mở ngay, không cần cài gì
+
+**Hướng dẫn:** Xem file README.txt
+
+Chúc thành công!
+
+---
+
+========================================
+  EMAIL MẪU (GỬI LINK GOOGLE DRIVE)
+========================================
+
+Tiêu đề: [Link] EasyInvoice Auto - Phần mềm tự động hóa
+
+---
+
+Xin chào [Tên],
+
+Phần mềm EasyInvoice Auto đã sẵn sàng!
+
+📥 **LINK TẢI:**
+[Link Google Drive của bạn]
+
+📦 **KÍCH THƯỚC:** ~200MB
+
+📋 **SAU KHI TẢI:**
+1. Giải nén file ZIP
+2. Vào thư mục EasyInvoiceAuto_v1.0
+3. Double-click EasyInvoiceAuto.exe
+4. Đọc file README.txt để biết cách dùng
+
+⏱️ **LẦN ĐẦU:** Mất 5-10 phút cài đặt
+⏱️ **LẦN SAU:** Mở ngay!
+
+💡 **MẸO:** Đọc file HUONG_DAN_NHANH.txt để hiểu nhanh
+
+📧 **HỖ TRỢ:** [Email của bạn]
+
+Chúc bạn thành công!
+
+Trân trọng,
+[Tên của bạn]
+
+---
+
+========================================
+  CHECKLIST TRƯỚC KHI GỬI EMAIL
+========================================
+
+☑️ Đã build EXE thành công
+☑️ Đã test EXE trên máy sạch
+☑️ Đã tạo package (chạy create_package.bat)
+☑️ Đã nén thành ZIP
+☑️ Đã kiểm tra kích thước (~200MB)
+☑️ Đã upload lên Google Drive (nếu cần)
+☑️ Đã test link download (nếu dùng Drive)
+☑️ Đã viết email rõ ràng
+☑️ Đã đính kèm file hoặc link
+☑️ Đã kiểm tra chính tả
+
+========================================

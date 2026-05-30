@@ -1,0 +1,143 @@
+========================================
+  HƯỚNG DẪN NHANH - EASYINVOICE AUTO
+========================================
+
+🎯 QUY TRÌNH SỬ DỤNG
+
+┌─────────────────────────────────────┐
+│  1. Double-click EXE                │
+│     ↓                               │
+│  2. Chrome tự động mở               │
+│     ↓                               │
+│  3. Popup: "Đăng nhập EasyInvoice?" │
+│     ↓                               │
+│  4. Đăng nhập trong Chrome          │
+│     ↓                               │
+│  5. Click OK trong popup            │
+│     ↓                               │
+│  6. Chọn tab chức năng              │
+│     ↓                               │
+│  7. Chọn file Excel                 │
+│     ↓                               │
+│  8. Click "Bắt đầu"                 │
+│     ↓                               │
+│  9. Chờ xong! ✅                    │
+└─────────────────────────────────────┘
+
+========================================
+  CÂU HỎI THƯỜNG GẶP
+========================================
+
+❓ Lần đầu đăng nhập EasyInvoice phải làm gì?
+✅ Đăng nhập bình thường → Chờ 5 giây → Tự động chạy
+   KHÔNG CẦN nhấn Enter hay click gì thêm!
+
+❓ Lần sau có phải đăng nhập lại không?
+✅ KHÔNG! Chrome đã lưu đăng nhập
+   Lần sau mở app → Tự động chạy ngay!
+
+❓ Có cần nhấn Enter trong terminal không?
+✅ KHÔNG! Ứng dụng GUI tự động xử lý
+   Chỉ cần click nút "Bắt đầu" trong app
+
+❓ Chrome có tự động đóng không?
+✅ KHÔNG! Chrome vẫn mở để bạn dùng tiếp
+   Đóng app không đóng Chrome
+
+❓ Có cần chạy file BAT không?
+✅ KHÔNG! App tự động mở Chrome
+   Không cần chạy chrome-debug.bat
+
+========================================
+  TIMELINE SỬ DỤNG
+========================================
+
+🕐 LẦN ĐẦU TIÊN (10-15 phút):
+   0:00 - Double-click EXE
+   0:05 - Cài Chromium (5-10 phút)
+   5:00 - Chrome mở
+   5:10 - Popup: "Đăng nhập EasyInvoice?"
+   5:15 - Đăng nhập trong Chrome
+   5:20 - Click OK trong popup
+   5:25 - Chọn file Excel
+   5:30 - Click "Bắt đầu"
+   5:35 - Xử lý (tùy số lượng)
+   10:00 - Hoàn thành! ✅
+
+🕐 LẦN SAU (2-5 phút):
+   0:00 - Double-click EXE
+   0:02 - Chrome mở (đã đăng nhập)
+   0:03 - Popup: "Bắt đầu ngay?"
+   0:04 - Click Yes
+   0:05 - Chọn file Excel
+   0:10 - Click "Bắt đầu"
+   0:15 - Xử lý (tùy số lượng)
+   2:00 - Hoàn thành! ✅
+
+========================================
+  CHECKLIST TRƯỚC KHI DÙNG
+========================================
+
+☑️ Đã cài Google Chrome
+☑️ Có kết nối internet (lần đầu)
+☑️ Có file Excel đúng format
+☑️ Biết tài khoản EasyInvoice (lần đầu)
+☑️ Có Email + App Password (nếu gửi mail)
+
+========================================
+  3 CHỨC NĂNG CHÍNH
+========================================
+
+📥 TAB 1: TẢI PDF
+   ✅ Tìm hóa đơn theo MST
+   ✅ Tải PDF về máy
+   ✅ Đổi tên tự động
+   ✅ Lưu vào: downloads/
+   ⏱️ Thời gian: ~5-7s/đơn
+
+📝 TAB 2: TẠO HÓA ĐƠN
+   ✅ Tạo hóa đơn mới
+   ✅ Tự động điền thông tin
+   ✅ Tự động điều chỉnh thuế
+   ✅ Lưu trên EasyInvoice
+   ⏱️ Thời gian: ~10-15s/đơn
+
+📧 TAB 3: GỬI EMAIL
+   ✅ Tải PDF theo MST
+   ✅ Gửi email tự động
+   ✅ PDF đính kèm
+   ✅ Gửi đến khách hàng
+   ⏱️ Thời gian: ~8-10s/đơn
+
+========================================
+  MẸO TIẾT KIỆM THỜI GIAN
+========================================
+
+💡 Chuẩn bị file Excel trước
+   → Kiểm tra MST đúng format (TEXT)
+   → Đảm bảo có đủ cột bắt buộc
+
+💡 Đăng nhập EasyInvoice 1 lần
+   → Lần sau tự động đăng nhập
+   → Không cần nhập lại
+
+💡 Để Chrome mở
+   → Không đóng Chrome sau khi xong
+   → Lần sau chạy nhanh hơn
+
+💡 Xử lý nhiều đơn cùng lúc
+   → Chuẩn bị file Excel đầy đủ
+   → Chạy 1 lần cho tất cả
+
+========================================
+  THÀNH CÔNG! 🎉
+========================================
+
+Bây giờ bạn đã biết cách dùng!
+Chỉ cần:
+1. Double-click EXE
+2. Chọn file Excel
+3. Click "Bắt đầu"
+4. Chờ xong!
+
+Đơn giản vậy thôi! ☕

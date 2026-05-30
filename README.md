@@ -1,82 +1,356 @@
-# 🤖 EasyInvoice Automation Bot
+# 🤖 EasyInvoice Auto - Tự động hóa toàn diện
 
-Bot tự động hóa các tác vụ trên hệ thống EasyInvoice:
-- **Tải hóa đơn PDF** và gửi email cho khách hàng (tìm theo Mã số thuế)
-- **Tạo hóa đơn mới** từ file Excel
+[![Version](https://img.shields.io/badge/version-1.1-blue.svg)](https://github.com/tdatcode/automation)
+[![Python](https://img.shields.io/badge/python-3.10+-green.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
+
+Ứng dụng GUI tự động hóa 3 tác vụ trên hệ thống EasyInvoice:
+- 📥 **Tải hóa đơn PDF** - Tìm theo MST, tải và đổi tên tự động
+- 📝 **Tạo hóa đơn mới** - Tạo hóa đơn từ file Excel
+- 📧 **Gửi email** - Gửi PDF qua email với chế độ TEST/REAL
+
+---
+
+## ✨ Tính năng nổi bật
+
+### 🎯 3 Chức năng chính
+
+#### 1. 📥 Tải PDF
+- Tìm hóa đơn theo **Mã số thuế (MST)**
+- Tải PDF từ EasyInvoice
+- Đổi tên tự động theo tên khách hàng
+- Lưu vào thư mục `downloads/`
+
+#### 2. 📝 Tạo hóa đơn
+- Đọc thông tin từ Excel (Sheet: Details)
+- Tự động điền MST, sản phẩm, VAT
+- Tự động điều chỉnh thuế nếu sai lệch
+- Lưu dữ liệu trên EasyInvoice
+
+#### 3. 📧 Gửi email (MỚI v1.1)
+- **🧪 TEST Mode**: Gửi cho chính mình để kiểm tra
+  - Email có thông tin khách hàng (Tên, MST, Email thật)
+  - Có PDF hóa đơn đính kèm
+  - An toàn, không gửi cho khách hàng
+- **📧 REAL Mode**: Gửi thật cho khách hàng
+  - Email chính thức
+  - Gửi đến địa chỉ trong Excel
+
+### 🚀 Tự động hóa hoàn toàn
+
+- ✅ Tự động cài Chromium (lần đầu)
+- ✅ Tự động mở Chrome với debug mode
+- ✅ Tự động lưu đăng nhập EasyInvoice
+- ✅ Popup xác nhận rõ ràng
+- ✅ Nút "Dừng lại" để dừng giữa chừng
+- ✅ Progress bar + Log real-time
+- ✅ Thân thiện với non-IT
+
+---
+
+## 📸 Giao diện
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🤖 EasyInvoice Auto - Tự động hóa toàn diện                │
+├─────────────────────────────────────────────────────────────┤
+│  [📥 Tải PDF]  [📝 Tạo hóa đơn]  [📧 Gửi email]            │
+├─────────────────────────────────────────────────────────────┤
+│  📁 Chọn file Excel                                         │
+│  [File path........................] [📂 Chọn file]         │
+│                                                             │
+│  📧 Cấu hình Email (chỉ tab Gửi email)                      │
+│  Email: [your@gmail.com]                                    │
+│  Pass:  [****************]                                  │
+│                                                             │
+│  📊 Tiến độ                                                 │
+│  [████████████████████████████████]                         │
+│  Sẵn sàng                                                   │
+│                                                             │
+│  📝 Log                                                     │
+│  [Log messages here....................]                    │
+│                                                             │
+│  [▶️ Bắt đầu]  [⏹️ Dừng lại]                               │
+│                                                             │
+│  (Tab Gửi email có 2 nút)                                  │
+│  [🧪 TEST - Gửi cho chính mình]                            │
+│  [📧 THẬT - Gửi cho khách hàng]                            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Cài đặt
+
+### Yêu cầu hệ thống
+- Windows 10/11
+- Python 3.10+ (nếu chạy từ source)
+- Google Chrome
+- Kết nối internet (lần đầu)
+
+### Cách 1: Dùng file EXE (Khuyến nghị cho non-IT)
+
+1. **Tải file**
+   ```
+   Tải EasyInvoiceAuto.zip từ GitHub Releases
+   ```
+
+2. **Giải nén**
+   ```
+   Giải nén vào thư mục bất kỳ
+   ```
+
+3. **Chạy**
+   ```
+   Double-click EasyInvoiceAuto.exe
+   ```
+
+4. **Lần đầu chạy**
+   - Cần internet để tải Chromium (~100MB)
+   - Mất 5-10 phút
+   - Lần sau không cần nữa
+
+### Cách 2: Chạy từ source code
+
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/tdatcode/automation.git
+   cd automation/botmail
+   ```
+
+2. **Cài đặt dependencies**
+   ```bash
+   pip install -r requirements.txt
+   playwright install chromium
+   ```
+
+3. **Tạo file .env**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Sửa file `.env`:
+   ```env
+   SENDER_EMAIL=your_email@gmail.com
+   SENDER_PASSWORD=your_app_password
+   EASYINVOICE_INDEX_URL=https://your-mst.easyinvoice.com.vn/EInvoice/Index
+   ```
+
+4. **Chạy ứng dụng**
+   ```bash
+   python gui_app.py
+   ```
+
+---
+
+## 📊 File Excel
+
+### Sheet "Summary" (cho Tải PDF và Gửi email)
+
+| Cột | Bắt buộc | Mô tả |
+|-----|----------|-------|
+| **Tên công ty/nhà thuốc/quầy thuốc** | ✅ | Tên khách hàng (dùng để đặt tên file PDF) |
+| **Mã số thuế** | ✅ | MST để tìm kiếm (format TEXT, giữ số 0 ở đầu) |
+| **Địa chỉ gửi hóa đơn** | ✅ | Email nhận hóa đơn |
+| **Tổng tiền** | ⚪ | Số tiền để so sánh (optional) |
+
+⚠️ **Lưu ý**: Cột "Mã số thuế" phải format TEXT để giữ số 0 ở đầu!
+
+### Sheet "Details" (cho Tạo hóa đơn)
+
+| Cột | Mô tả |
+|-----|--------|
+| **ID hóa đơn** | Nhóm sản phẩm cùng 1 hóa đơn |
+| **Mã số thuế** | MST khách hàng |
+| **Tên sản phẩm** | Tên hàng hóa |
+| **Giá đơn vị** | Đơn giá |
+| **SL đặt** | Số lượng |
+| **vat** | % thuế (0, 5, 8, 10) |
+
+---
+
+## 📧 Cấu hình Email (Gmail)
+
+### Bước 1: Tạo App Password
+
+1. Vào https://myaccount.google.com/apppasswords
+2. Chọn "Mail" → "Windows Computer"
+3. Copy mật khẩu 16 ký tự
+4. Dán vào ô "Mật khẩu" trong GUI
+
+### Bước 2: Điền vào GUI
+
+- **Email gửi**: your@gmail.com
+- **Mật khẩu**: Mật khẩu 16 ký tự (App Password)
+
+---
+
+## 🎯 Hướng dẫn sử dụng
+
+### Tab 1: 📥 Tải PDF
+
+1. Chọn file Excel (Sheet: Summary)
+2. Click "▶️ Bắt đầu tải PDF"
+3. Chrome tự động mở
+4. Đăng nhập EasyInvoice (nếu chưa)
+5. Click OK để bắt đầu
+6. Chờ xử lý
+7. File PDF lưu trong `downloads/`
+
+### Tab 2: 📝 Tạo hóa đơn
+
+1. Chọn file Excel (Sheet: Details)
+2. Click "▶️ Bắt đầu tạo hóa đơn"
+3. Chrome tự động mở
+4. Đăng nhập EasyInvoice (nếu chưa)
+5. Click OK để bắt đầu
+6. Chờ xử lý
+7. Hóa đơn được tạo trên EasyInvoice
+
+### Tab 3: 📧 Gửi email
+
+#### 🧪 TEST Mode (Khuyến nghị làm trước)
+
+1. Chọn file Excel (Sheet: Summary)
+2. Điền Email + Mật khẩu
+3. Click **"🧪 TEST - Gửi cho chính mình"**
+4. Chrome tự động mở
+5. Đăng nhập EasyInvoice (nếu chưa)
+6. Click OK để bắt đầu
+7. Kiểm tra hộp thư của BẠN
+8. Xem email có đúng không:
+   - Thông tin khách hàng đúng?
+   - PDF đúng hóa đơn?
+   - Nội dung email OK?
+
+#### 📧 REAL Mode (Sau khi TEST OK)
+
+1. Nếu TEST OK → Click **"📧 THẬT - Gửi cho khách hàng"**
+2. Xác nhận popup (⚠️ Cảnh báo)
+3. Chờ xử lý
+4. Email gửi đến khách hàng
+
+---
+
+## 🧪 Email TEST vs REAL
+
+### 🧪 Email TEST
+
+**Gửi đến**: Email của bạn (không phải khách hàng)
+
+**Tiêu đề**: `🧪 TEST - Hóa đơn điện tử - Nhà thuốc ABC`
+
+**Nội dung**:
+```
+🧪 ĐÂY LÀ EMAIL TEST - KHÔNG GỬI CHO KHÁCH HÀNG
+
+Email này được gửi để kiểm tra trước khi gửi thật.
+
+---
+THÔNG TIN KHÁCH HÀNG:
+- Tên: Nhà thuốc ABC
+- MST: 0312670722
+- Email thật: nhathuocabc@gmail.com
+
+---
+NỘI DUNG EMAIL THẬT SẼ NHƯ SAU:
+
+Kính gửi Quý khách Nhà thuốc ABC,
+
+Công ty xin gửi hóa đơn điện tử đính kèm.
+
+Quý khách vui lòng kiểm tra file PDF trong email này.
+
+Trân trọng.
+
+---
+Công ty Lucky Star
+```
+
+**Đính kèm**: Nhà_thuốc_ABC.pdf
+
+### 📧 Email REAL
+
+**Gửi đến**: Email khách hàng (trong Excel)
+
+**Tiêu đề**: `Hóa đơn điện tử - Nhà thuốc ABC`
+
+**Nội dung**:
+```
+Kính gửi Quý khách Nhà thuốc ABC,
+
+Công ty xin gửi hóa đơn điện tử đính kèm.
+
+Quý khách vui lòng kiểm tra file PDF trong email này.
+
+Trân trọng.
+
+---
+Công ty Lucky Star
+```
+
+**Đính kèm**: Nhà_thuốc_ABC.pdf
+
+---
+
+## 🔧 Build EXE (cho developer)
+
+### Bước 1: Cài PyInstaller
+
+```bash
+pip install pyinstaller
+```
+
+### Bước 2: Build
+
+```bash
+python build_exe.py
+```
+
+### Bước 3: Tạo package
+
+```bash
+create_package.bat
+```
+
+### Bước 4: Nén ZIP
+
+```bash
+# Windows
+Compress-Archive -Path "EasyInvoiceAuto_v1.0" -DestinationPath "EasyInvoiceAuto.zip"
+```
+
+---
 
 ## 📁 Cấu trúc dự án
 
 ```
 botmail/
-├── main_excel_preview.py        # Tải PDF + xuất danh sách mail (không gửi)
-├── main_excel_test_mail.py      # Tải PDF + gửi mail test cho chính mình
-├── main_excel_send.py           # Tải PDF + gửi mail thật cho khách
-├── main_create_invoice.py       # Tạo hóa đơn mới trên EasyInvoice
-├── invoice_agents/
-│   ├── config.py                # Cấu hình chung
-│   ├── easyinvoice_agent.py     # Agent tải hóa đơn PDF (tìm theo MST)
-│   ├── create_invoice_agent.py  # Agent tạo hóa đơn mới
-│   ├── mail_agent.py            # Agent gửi email
-│   ├── master_agent_excel.py    # Agent điều phối (tải + gửi mail)
-│   └── utils.py                 # Hàm tiện ích
+├── gui_app.py                    # GUI chính
+├── invoice_agents/               # Backend logic
+│   ├── config.py
+│   ├── easyinvoice_agent.py
+│   ├── create_invoice_agent.py
+│   ├── mail_agent.py
+│   ├── master_agent_excel.py
+│   └── utils.py
 ├── excel/
-│   └── HoaDon.xlsx             # File Excel chung (2 sheet)
-├── downloads/                   # PDF đã tải (tự động tạo)
-├── emailgui/                    # Danh sách mail output (tự động tạo)
-├── chrome-debug.bat             # Mở Chrome với remote debugging
-├── test_agents.py               # Test các agent
-├── .env.example                 # Mẫu cấu hình
-└── requirements.txt             # Dependencies
+│   └── HoaDon.xlsx              # File Excel mẫu
+├── downloads/                    # Thư mục lưu PDF
+├── dist/
+│   └── EasyInvoiceAuto.exe      # File EXE
+├── build_exe.py                  # Script build
+├── create_package.bat            # Script tạo package
+├── requirements.txt              # Dependencies
+├── .env.example                  # Mẫu cấu hình
+└── README.md                     # File này
 ```
 
-## 📊 File Excel
+---
 
-Cả 2 tác vụ dùng **cùng 1 file Excel** (`excel/HoaDon.xlsx`) với 2 sheet:
+## ⚠️ Lưu ý quan trọng
 
-| Sheet | Tác vụ | Mô tả |
-|-------|--------|--------|
-| **Summary** | Gửi mail | Thông tin khách hàng + email + MST |
-| **Details** | Tạo hóa đơn | Chi tiết sản phẩm từng đơn |
-
-## 🚀 Cài đặt
-
-### 1. Cài Python dependencies
-
-```bash
-pip install -r requirements.txt
-playwright install chromium
-```
-
-### 2. Tạo file `.env`
-
-Copy `.env.example` thành `.env` và điền thông tin:
-
-```env
-SENDER_EMAIL=your_email@gmail.com
-SENDER_PASSWORD=your_app_password
-```
-
-## 📧 Chức năng 1: Tải hóa đơn & Gửi mail
-
-### Quy trình
-
-1. Đọc file Excel (`excel/HoaDon.xlsx`, sheet "Summary") chứa danh sách khách hàng
-2. **Tìm kiếm từng khách hàng trên EasyInvoice theo Mã số thuế (MST)**
-3. So sánh tổng tiền để chọn đúng hóa đơn
-4. Nếu có nhiều kết quả → Chọn hóa đơn có "Hợp lệ" ở cột KQ CQT
-5. Tải file PDF hóa đơn (đặt tên theo tên khách hàng)
-6. Gửi email (hoặc xuất danh sách)
-
-### File Excel cần có các cột (sheet "Summary")
-
-| Cột | Bắt buộc | Mô tả |
-|-----|----------|-------|
-| **Tên công ty/nhà thuốc/quầy thuốc** | ✅ | Tên khách hàng (dùng để đặt tên file PDF) |
-| **Mã số thuế** | ✅ | MST để tìm kiếm trên EasyInvoice |
-| **Địa chỉ gửi hóa đơn** | ✅ | Email nhận hóa đơn |
-| **Tổng tiền** | ⚪ | Số tiền để so sánh (optional) |
-
-### ⚠️ Lưu ý quan trọng về Mã số thuế
+### Mã số thuế (MST)
 
 **MST phải là TEXT trong Excel** để giữ số 0 ở đầu:
 
@@ -86,121 +360,118 @@ SENDER_PASSWORD=your_app_password
 
 Nếu để dạng Number, Excel sẽ tự động xóa số 0 ở đầu → Sai MST!
 
-### Cách chạy
+### Email Gmail
 
-```bash
-# Preview (không gửi mail, chỉ tải PDF + xuất Excel)
-python main_excel_preview.py
+- Phải dùng **App Password**, không phải mật khẩu Gmail thường
+- Gmail giới hạn ~500 email/ngày
+- Nếu gửi nhiều, nên chia nhỏ batch
 
-# Gửi mail test cho chính mình (kiểm tra trước)
-python main_excel_test_mail.py
+### Chrome Debug Mode
 
-# Gửi mail thật cho khách hàng
-python main_excel_send.py
-```
+- Ứng dụng tự động mở Chrome với debug mode
+- Đăng nhập EasyInvoice sẽ được lưu lại
+- Lần sau không cần đăng nhập lại
 
-## 📝 Chức năng 2: Tạo hóa đơn mới
+### Antivirus
 
-### Quy trình
+- Antivirus có thể cảnh báo file EXE (false positive)
+- Thêm vào whitelist nếu cần
 
-1. Đọc file Excel (`excel/HoaDon.xlsx`, sheet "Details")
-2. Nhóm sản phẩm theo ID hóa đơn (cùng ID = cùng 1 hóa đơn)
-3. Với mỗi hóa đơn:
-   - Click "Tạo mới"
-   - Điền Mã số thuế → Lấy thông tin khách hàng
-   - Chọn VAT %
-   - Điền từng sản phẩm (tên, số lượng, đơn giá)
-   - So sánh tổng tiền với Excel, tự động điều chỉnh thuế nếu sai lệch
-   - Lưu dữ liệu
+---
 
-### File Excel cần có các cột (sheet "Details")
+## 🐛 Xử lý lỗi
 
-| Cột | Mô tả |
-|-----|--------|
-| ID hóa đơn | Nhóm SP cùng 1 hóa đơn |
-| Mã số thuế | MST khách hàng |
-| Tên sản phẩm | Tên hàng hóa |
-| Giá đơn vị | Đơn giá |
-| SL đặt | Số lượng |
-| vat | % thuế (0, 5, 8, 10) |
+### Lỗi: "Không tìm thấy Chrome"
 
-### Cách chạy
+**Giải pháp**: Cài đặt Google Chrome từ https://www.google.com/chrome/
 
-```bash
-python main_create_invoice.py
-```
+### Lỗi: "Không kết nối được Chrome"
 
-## 🌐 Kết nối Chrome
+**Giải pháp**: 
+1. Đóng tất cả cửa sổ Chrome
+2. Chạy lại ứng dụng
+3. Chrome sẽ tự động mở với debug mode
 
-Bot kết nối vào Chrome đang chạy với remote debugging:
+### Lỗi: "Chưa đăng nhập EasyInvoice"
 
-### Cách mở Chrome debug mode:
+**Giải pháp**:
+1. Đăng nhập trong Chrome khi popup hiện ra
+2. Click OK sau khi đăng nhập xong
 
-**Cách 1: Double-click file `chrome-debug.bat`**
+### Lỗi: "Không gửi được email"
 
-**Cách 2: Chạy lệnh PowerShell:**
-```powershell
-& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222
-```
+**Giải pháp**:
+1. Kiểm tra Email + App Password đúng chưa
+2. Kiểm tra kết nối internet
+3. Thử gửi TEST trước
 
-**Lưu ý:**
-- Đóng tất cả cửa sổ Chrome trước khi chạy
-- Chrome sẽ mở với remote debugging port 9222
-- Đăng nhập vào EasyInvoice trước khi chạy bot
-- Bot sẽ tự động kết nối vào Chrome đang mở
-
-## ⚙️ Cấu hình (.env)
-
-```env
-# Email (Gmail SMTP)
-SENDER_EMAIL=your_email@gmail.com
-SENDER_PASSWORD=your_app_password
-
-# EasyInvoice
-EASYINVOICE_INDEX_URL=https://0312670722.easyinvoice.com.vn/EInvoice/Index
-
-# File paths
-EXCEL_FILE=excel/HoaDon.xlsx
-DOWNLOAD_FOLDER=downloads
-EXCEL_MAIL_PREVIEW_FILE=emailgui/danh_sach_mail.xlsx
-```
-
-## 🧪 Test
-
-```bash
-python test_agents.py
-```
-
-## 📋 Yêu cầu hệ thống
-
-- Python 3.10+
-- Google Chrome
-- Windows 10/11
+---
 
 ## 🔄 Changelog
 
-### v2.0 - Cập nhật tìm kiếm theo MST (2026-05-23)
+### v1.1 (30/05/2026)
 
-**Thay đổi chính:**
-- ✅ Tìm hóa đơn theo **Mã số thuế (MST)** thay vì tên khách hàng (chính xác hơn)
-- ✅ Sửa lỗi tên file PDF bị lặp (từ `Tên_Tên.pdf` → `Tên.pdf`)
-- ✅ Đảm bảo MST được đọc dạng text (giữ số 0 ở đầu)
-- ✅ Tự động điều chỉnh thuế khi tạo hóa đơn nếu tổng tiền sai lệch
+**Tính năng mới**:
+- ✅ Thêm chế độ TEST email (gửi cho chính mình)
+- ✅ Thêm chế độ REAL email (gửi cho khách hàng)
+- ✅ Email TEST có thông tin khách hàng đầy đủ
+- ✅ Popup xác nhận rõ ràng cho từng chế độ
 
-**File thay đổi:**
-- `invoice_agents/easyinvoice_agent.py` - Đổi tìm kiếm theo MST
-- `invoice_agents/utils.py` - Sửa tên file PDF
-- `invoice_agents/master_agent_excel.py` - Đọc MST dạng text
+**Cải tiến**:
+- ✅ Giao diện Tab 3 gọn gàng hơn
+- ✅ An toàn hơn, tránh gửi nhầm email
+
+### v1.0 (23/05/2026)
+
+**Tính năng**:
+- ✅ GUI 3 tab đầy đủ
+- ✅ Tải PDF theo MST
+- ✅ Tạo hóa đơn từ Excel
+- ✅ Gửi email với PDF đính kèm
+- ✅ Tự động hóa hoàn toàn
+- ✅ Nút Dừng lại
+
+---
 
 ## 📞 Hỗ trợ
 
-Nếu gặp lỗi, kiểm tra:
-1. Chrome đã mở với remote debugging port 9222 chưa?
-2. Đã đăng nhập EasyInvoice chưa?
-3. File Excel có đúng format không?
-4. Cột "Mã số thuế" có format Text không?
-5. File `.env` đã cấu hình đúng chưa?
+### Liên hệ
+
+- **GitHub**: https://github.com/tdatcode/automation
+- **Issues**: https://github.com/tdatcode/automation/issues
+
+### Báo lỗi
+
+Nếu gặp lỗi, vui lòng tạo issue trên GitHub với thông tin:
+- Mô tả lỗi
+- Các bước tái hiện
+- Screenshot (nếu có)
+- File log (nếu có)
+
+---
 
 ## 📄 License
 
-MIT License
+MIT License - Xem file [LICENSE](LICENSE) để biết thêm chi tiết.
+
+---
+
+## 🙏 Đóng góp
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## ⭐ Star History
+
+Nếu project này hữu ích, hãy cho một ⭐ trên GitHub!
+
+---
+
+**Made with ❤️ by tdatcode**
